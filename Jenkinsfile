@@ -8,15 +8,17 @@ pipeline {
         disableConcurrentBuilds()
     }
     parameters {
-        choice(name: 'ENVIRONMENT', choices: ['dev', 'prod'], description: 'Select the environment to deploy')
+        choice(name: 'ENVIRONMENT', choices: ['dev','qa','uat','pre-prod' 'prod'], description: 'Select the environment to deploy')
         string(name: 'VERSION', defaultValue: '', description: 'Specify the application version ')
+        string(name: 'project', description: 'Enter your project name')
+        string(name: 'component', description: 'Enter your component name')
     }
     environment { 
         appVersion = ''
-        account_id = '315069654700'
+        account_id = ''
         region = 'us-east-1'
-        project = 'expense'
-        component = 'backend'
+        project = ''
+        component = ''
         environment = ''
     }
     
@@ -26,19 +28,15 @@ pipeline {
                 script {
                     // Set account ID based on selected environment
                     environment = params.ENVIRONMENT
-                    if (params.ENVIRONMENT == 'dev') {
-                        account_id = '315069654700'
-                        
-                    } else if (params.ENVIRONMENT == 'prod') {
-                        account_id = '315069654700' // Replace with your prod account ID
-                    }
+                    account_id = pipelineGlobals.getAccountId(environment)
 
                     if (params.VERSION) {
                         appVersion = params.VERSION
                         echo "Using user-specified version: $appVersion"
                     }
 
-                    environment = params.ENVIRONMENT
+                    project = params.project
+                    component = params.component
                     echo "Selected environment: ${environment}"
                     echo "Account ID: ${account_id}"
                 }
@@ -46,7 +44,7 @@ pipeline {
         }
         stage('Deploy'){
             steps{
-                withAWS(credentials: 'aws-creds', region: 'us-east-1') {
+                withAWS(credentials: "aws-creds-${environment}", region: 'us-east-1') {
                     script{               
                         echo "${component} not installed yet, first time installation"
                         sh"""

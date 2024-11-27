@@ -12,6 +12,7 @@ pipeline {
         string(name: 'VERSION', defaultValue: '', description: 'Specify the application version ')
         string(name: 'project', description: 'Enter your project name')
         string(name: 'component', description: 'Enter your component name')
+        string(name: 'jira_id', description: 'Enter your jira ID')
     }
     environment { 
         appVersion = ''
@@ -23,6 +24,19 @@ pipeline {
     }
     
     stages {
+        stage('Check JIRA'){
+            when{
+                expression { params.ENVIRONMENT == "prod" }
+            }
+            steps{
+                sh """
+                    echo "check JIRA ID is given or not"
+                    echo "Check JIRA status is approved or not"
+                    echo "Check deployment is triggered in deployment window or not"
+                    echo "if these conditions met only proceed, other wise error"
+                """
+            }
+        }
         stage('Setup Environment') {
             steps {
                 script {

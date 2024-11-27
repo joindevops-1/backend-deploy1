@@ -8,7 +8,7 @@ pipeline {
         disableConcurrentBuilds()
     }
     parameters {
-        choice(name: 'ENVIRONMENT', choices: ['dev','qa','uat','pre-prod' 'prod'], description: 'Select the environment to deploy')
+        choice(name: 'ENVIRONMENT', choices: ['dev','qa','uat','pre-prod', 'prod'], description: 'Select the environment to deploy')
         string(name: 'VERSION', defaultValue: '', description: 'Specify the application version ')
         string(name: 'project', description: 'Enter your project name')
         string(name: 'component', description: 'Enter your component name')
